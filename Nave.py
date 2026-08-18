@@ -1,5 +1,6 @@
 import pygame
 from ElementoJogo import ElementoJogo
+from config.GameConfig import PlayerConfig
 
 class Nave(ElementoJogo):
     def __init__(self, largura_tela, altura_tela, velocidade=6, cor=(0, 255, 100)):
@@ -10,7 +11,7 @@ class Nave(ElementoJogo):
             largura=40,
             altura=40,
             cor=cor,
-            velocidade=velocidade
+            velocidade=PlayerConfig.PLAYER_VELOCITY
         )
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela

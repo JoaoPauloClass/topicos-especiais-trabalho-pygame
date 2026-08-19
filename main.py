@@ -3,6 +3,7 @@ import sys
 import pygame
 from Nave import Nave
 from Asteroid import Asteroid
+from config import GameConfig
 from config.GameConfig import EngineConfig
 
 class Menu:
@@ -127,7 +128,7 @@ class Customizar:
                     if self.btn_jogar.collidepoint(evento.pos):
                         return "JOGANDO"
 
-        return "CUSTOMIZAR"
+        return "CUSTOMIZANDO"
 
     def desenhar(self):
         self.tela.fill(self.COR_FUNDO)
@@ -185,12 +186,11 @@ class Jogo:
 
         self.clock = pygame.time.Clock()
         self.fps = EngineConfig.FPS
-        self.dt = self.clock.tick(self.fps) / 1000.0
         self.pontos = 0
 
         # Elementos do jogo
-        self.nave = Nave(self.largura, self.altura)
-        self.asteroide = Asteroid(self.largura, self.altura)
+        self.nave = Nave(self.largura, self.altura, './sprites/fighters.png')
+        self.asteroide = Asteroid(self.largura, self.altura, './sprites/asteroid.png')
 
 
 

@@ -1,22 +1,25 @@
 import pygame
 from ElementoJogo import ElementoJogo
+from config import GameConfig
 from config.GameConfig import PlayerConfig
 
 class Nave(ElementoJogo):
-    def __init__(self, largura_tela, altura_tela, velocidade=6, cor=(0, 255, 100)):
+    def __init__(self, largura_tela, altura_tela,caminho_sprite, velocidade=6, ):
         # Inicializa a classe base com posição inicial centralizada embaixo
         super().__init__(
             x=largura_tela // 2 - 20,
             y=altura_tela - 60,
             largura=40,
             altura=40,
-            cor=cor,
-            velocidade=PlayerConfig.PLAYER_VELOCITY
+            velocidade=PlayerConfig.PLAYER_VELOCITY,
+            caminho_sprite='./sprites/fighters.png'
         )
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
         self.vel_x = 0
         self.tiros = []  # Lista que guardará os tiros ativos
+
+        self.sprite_sheet = pygame.image.load(caminho_sprite)
 
     def processar_evento(self, evento):
         """Controla os eventos de teclado para movimentação e disparo."""
@@ -63,14 +66,31 @@ class Nave(ElementoJogo):
         self.atualizar_tiros()
 
     def desenhar(self, tela):
-        # Polimorfismo: desenha a nave em formato de triângulo
-        pontos = [
-            (self.rect.centerx, self.rect.top),
-            (self.rect.left, self.rect.bottom),
-            (self.rect.right, self.rect.bottom)
-        ]
-        pygame.draw.polygon(tela, self.cor, pontos)
+        # Polimorfismo: renderiza a nave e acordo com oq o player pegou
+
+        player_ship = self.__get_ship_sprite(GameConfig.PlayerConfig.PLAYER_SHIP)
+
+        tela.blit(player_ship, (self.rect.x, self.rect.y))
 
         # Desenha os tiros ativos na cor branca
         for tiro in self.tiros:
             pygame.draw.rect(tela, (255, 255, 255), tiro)
+
+    def __get_ship_sprite(self, player_ship=1):
+        #méto-do privado da classe para separa o sprite sheet e passar um sprite unico para o metodo de desenho
+        largura_total_sprite_sheet = self.sprite_sheet.get_width()
+        altura_total_sprite_sheet = self.sprite_sheet.get_height()
+
+        largura_sprite = largura_total_sprite_sheet // 2
+        altura_sprite = altura_total_sprite_sheet // 2
+
+        sprites = []
+        for linha in range(2):
+            for coluna in range(2):
+                x = linha * largura_sprite
+                y = coluna * altura_sprite
+
+                rect_corte = pygame.Rect(x, y, largura_sprite, altura_sprite)
+                sprites.append(self.sprite_sheet.subsurface(rect_corte))
+
+        return sprites[player_ship]

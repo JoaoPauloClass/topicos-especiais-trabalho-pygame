@@ -4,7 +4,7 @@ from ElementoJogo import ElementoJogo
 
 
 class Asteroid(ElementoJogo):
-    def __init__(self, largura_tela, altura_tela, velocidade=5, cor=(200, 50, 50)):
+    def __init__(self, largura_tela, altura_tela, caminho_sprite, velocidade=5,):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
         self.raio = 20
@@ -14,7 +14,7 @@ class Asteroid(ElementoJogo):
             y=0,
             largura=self.raio * 2,
             altura=self.raio * 2,
-            cor=cor,
+            caminho_sprite='./sprites/asteroid.png',
             velocidade=velocidade
         )
         self.iniciar_status()
@@ -36,5 +36,6 @@ class Asteroid(ElementoJogo):
             self.iniciar_status()
 
     def desenhar(self, tela):
-        # Polimorfismo: desenha o asteroide como círculo
-        pygame.draw.circle(tela, self.cor, self.rect.center, self.raio)
+        # Polimorfismo: desenha o sprite do asteroide
+        sprite_asteroid = pygame.image.load('./sprites/asteroid.png')
+        tela.blit(sprite_asteroid , (self.rect.x, self.rect.y))

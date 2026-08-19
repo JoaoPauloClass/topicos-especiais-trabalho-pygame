@@ -20,6 +20,11 @@ class Nave(ElementoJogo):
         self.tiros = []  # Lista que guardará os tiros ativos
 
         self.sprite_sheet = pygame.image.load(caminho_sprite)
+        self.player_ship = self.__get_ship_sprite(GameConfig.PlayerConfig.PLAYER_SHIP)
+        self.rect = self.player_ship.get_rect()
+
+        self.rect.centerx = largura_tela // 2
+        self.rect.bottom = altura_tela
 
     def processar_evento(self, evento):
         """Controla os eventos de teclado para movimentação e disparo."""
@@ -43,8 +48,8 @@ class Nave(ElementoJogo):
 
         if self.rect.left < 0:
             self.rect.left = 0
-        elif self.rect.right > self.largura_tela:
-            self.rect.right = self.largura_tela
+        elif self.rect.right > (self.largura_tela - 120):
+            self.rect.right = (self.largura_tela - 120)
 
     def atirar(self):
         # =========================================================================
@@ -67,10 +72,7 @@ class Nave(ElementoJogo):
 
     def desenhar(self, tela):
         # Polimorfismo: renderiza a nave e acordo com oq o player pegou
-
-        player_ship = self.__get_ship_sprite(GameConfig.PlayerConfig.PLAYER_SHIP)
-
-        tela.blit(player_ship, (self.rect.x, self.rect.y))
+        tela.blit(self.player_ship, self.rect)
 
         # Desenha os tiros ativos na cor branca
         for tiro in self.tiros:

@@ -94,28 +94,80 @@ class Customizar:
         self.tela = tela
         self.fonte_titulo = pygame.font.SysFont("Arial", 48, bold=True)
         self.fonte_botao = pygame.font.SysFont("Arial", 28)
+        self.fonte_info = pygame.font.SysFont("Arial", 14)
+        self.largura_tela = tela.get_width()
+        self.algura_tela = tela.get_height()
 
-        self.largura_btn, self.altura_btn = 200,50
-        self.btn_jogar = pygame.Rect(
-            (EngineConfig.WIDTH // 2) - (self.largura_btn // 2),
-            300,
-            self.largura_btn,
-            self.altura_btn,
-        )
-        self.btn_customizar_nave = pygame.Rect(
-            (EngineConfig.WIDTH // 2) - (self.largura_btn // 2),
-            300,
-            self.largura_btn,
-            self.altura_btn,
-        )
-
+        
         # Cores
         self.COR_FUNDO = (15, 15, 25)
         self.COR_TEXTO = (255, 255, 255)
-        self.COR_BOTAO_JOGAR = (0, 150, 200)
+        self.COR_BOTAO_VOLTAR = (0, 150, 200)
         self.COR_BOTAO_CUSTOMIZAR = (150, 0, 200)
         self.COR_HOVER_JOGAR = (0, 200, 255) 
-        self.COR_HOVER_CUSTOMIZAR = (200, 0, 255) 
+        self.COR_HOVER_CUSTOMIZAR = (200, 0, 255)
+
+        self.largura_btn, self.altura_btn = 200,50
+        
+        self.sprite_sheet = pygame.image.load(
+            'sprites/fighters.png'
+        ).convert_alpha()
+        
+        self.sprites = self.__get_sprites()
+        
+        self.opcoes_grid = self.__create_grid_opcoes()
+        
+        self.btn_voltar = pygame.Rect(
+            self.algura_tela // 2 - 80, self.algura_tela - 70, 160 ,40
+        )
+        
+        
+    def __get_sprites(self):
+        """
+        Recorta o sprite sheet em 4 sprites diferentes
+        """
+        
+        largura_total = self.sprite_sheet.get_width()
+        altura_total = self.sprite_sheet.get_height()
+        
+        largura_s = largura_total // 2
+        altura_s = altura_total // 2
+        
+        sprites = []
+        
+        for linha in range(2):
+            for coluna in range(2):
+                x = coluna * largura_s
+                y = linha * altura_s
+                
+                rect_corte = pygame.Rect(x, y, largura_s, altura_s)
+                
+                sprite = self.sprite_sheet.subsurface(rect_corte)
+                sprites.append(sprite)
+        return sprites
+    
+    def __create_grid_opcoes(self):
+        options = []
+        square_size = 120
+        gap = 30
+        
+        start_grid_x = (
+            self.largura_tela - (2 * square_size + gap)
+        ) // 2
+        start_grid_y = 150
+        
+        for i in range(4):
+            linha = i // 2
+            coluna = i % 2
+            
+            x = start_grid_x + coluna * (square_size + gap)
+            y = start_grid_y + linha * (square_size + gap)
+            
+            rect_quadro = pygame.Rect(x,y,square_size,square_size)
+            options.append(rect_quadro)
+            
+        return options
+             
 
     def processar_eventos(self):
         for evento in pygame.event.get():
@@ -125,8 +177,8 @@ class Customizar:
 
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 if evento.button == 1: 
-                    if self.btn_jogar.collidepoint(evento.pos):
-                        return "JOGANDO"
+                    if self.btn_voltar.collidepoint(evento.pos):
+                        return "MENU"
 
         return "CUSTOMIZANDO"
 
@@ -134,39 +186,45 @@ class Customizar:
         self.tela.fill(self.COR_FUNDO)
 
         txt_titulo = self.fonte_titulo.render(
-            "Customize sua nave", True, self.COR_TEXTO
+            "SELEÇÃO DE NAVE", True, self.COR_TEXTO
         )
         rect_titulo = txt_titulo.get_rect(
-            center=(EngineConfig.WIDTH // 2, 180)
+            center=(EngineConfig.WIDTH // 2, 50)
         )
         self.tela.blit(txt_titulo, rect_titulo)
 
-        pos_mouse = pygame.mouse.get_pos()
-        cor_atual_jogar = (
-            self.COR_HOVER_JOGAR
-            if self.btn_jogar.collidepoint(pos_mouse)
-            else self.COR_BOTAO_JOGAR
-        )
-        
-        cor_atual_customizar = (
-            self.COR_HOVER_CUSTOMIZAR
-            if self.btn_customizar_nave.collidepoint(pos_mouse)
-            else self.COR_BOTAO_CUSTOMIZAR
-        )
+        nave_atual = GameConfig.PlayerConfig.PLAYER_SHIP
 
-        pygame.draw.rect(self.tela, cor_atual_jogar, self.btn_jogar,border_radius=5)
-        pygame.draw.rect(self.tela, cor_atual_customizar, self.btn_customizar_nave,border_radius=5)
+        for index, rect_quadro in enumerate(self.opcoes_grid):
+            if index == nave_atual:
+                cor_borda = (0,255,255)
+                largura_borda = 4
+            else:
+                cor_borda = (80,80,100)
+                largura_borda = 2
+                
+            pygame.draw.rect(self.tela, (30,30,45), rect_quadro)
+            pygame.draw.rect(
+                self.tela, cor_borda, rect_quadro, width=largura_borda
+            )
+                
+            sprite_nave = self.sprites[index]
+            rect_quadro = sprite_nave.get_rect(center = rect_quadro.center)
+            self.tela.blit(sprite_nave,rect_quadro)
+            
+            text_num = self.fonte_info.render(
+                f"{index + 1}", True, (200,200,200)
+            )
 
-        txt_jogar = self.fonte_botao.render("JOGAR", True, self.COR_TEXTO)
-        rect_jogar = txt_jogar.get_rect(center=self.btn_jogar.center)
+            self.tela.blit(text_num, (rect_quadro.x + 5, rect_quadro.y + 5))
+
+        pygame.draw.rect(self.tela, self.COR_BOTAO_VOLTAR, self.btn_voltar,border_radius=5)
+
+        txt_voltar = self.fonte_botao.render("VOLTAR", True, self.COR_TEXTO)
+        rect_voltar = txt_voltar.get_rect(center=self.btn_voltar.center)
+     
         
-        txt_customizar = self.fonte_botao.render("CUSTOMIZAR NAVE", True, self.COR_TEXTO)
-        rect_customizar = txt_customizar.get_rect(
-            center=(self.btn_jogar.centerx, self.btn_jogar.centery + 120)
-        )
-        
-        self.tela.blit(txt_jogar, rect_jogar)
-        self.tela.blit(txt_customizar, rect_customizar)
+        self.tela.blit(txt_voltar, rect_voltar)
 
         pygame.display.flip()
 

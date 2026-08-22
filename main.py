@@ -26,6 +26,8 @@ class Menu:
             self.altura_btn,
         )
 
+        self.rodando = True
+
         # Cores
         self.COR_FUNDO = (15, 15, 25)
         self.COR_TEXTO = (255, 255, 255)

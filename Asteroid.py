@@ -30,7 +30,7 @@ class Asteroid(ElementoJogo):
         # - Sortear uma velocidade de queda aleatória (ex: entre 3 e 7)
         # =========================================================================
         pos_x = random.randrange(40, self.largura_tela - 40)
-        vel = random.randrange(20, 100) / 100
+        vel = random.randrange(100, 200) / 100
 
 
         self.pos_y = -50

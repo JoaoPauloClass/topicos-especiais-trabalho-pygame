@@ -85,7 +85,7 @@ class Nave(ElementoJogo):
 
             # Posiciona o tiro no centro horizontal da nave (rect.centerx) e na ponta superior (rect.top)
             tiro_x = self.rect.centerx - (largura_tiro // 2)
-            tiro_y = self.rect.top - altura_tiro
+            tiro_y = self.rect.top - altura_tiro + 60
 
             novo_tiro = pygame.Rect(tiro_x, tiro_y, largura_tiro, altura_tiro)
             self.tiros.append(novo_tiro)

@@ -13,15 +13,15 @@ class ShipConfig:
         0: {
             "nome": "Caça Leve",
             "vida": 3,
-            "velocidade": 200,
+            "velocidade": 100,
             "dano_tiro": 15,
-            "vel_tiro": 1,
+            "vel_tiro": 150,
             "cooldown": 0.2,  # Atira a cada 0.2 segundos
         },
         1: {
             "nome": "Tanque Pesado",
             "vida": 8,
-            "velocidade": 25,
+            "velocidade": 250,
             "dano_tiro": 50,
             "vel_tiro": 100,
             "cooldown": 0.5,
@@ -29,9 +29,9 @@ class ShipConfig:
         2: {
             "nome": "Nave Laser",
             "vida": 4,
-            "velocidade": 500,
+            "velocidade": 25,
             "dano_tiro": 1,
-            "vel_tiro": 50,
+            "vel_tiro": 100,
             "cooldown": 0,
         },
         3: {

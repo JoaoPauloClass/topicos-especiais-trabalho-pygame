@@ -4,11 +4,12 @@ from ElementoJogo import ElementoJogo
 
 
 class Asteroid(ElementoJogo):
-    def __init__(self, largura_tela, altura_tela, caminho_sprite, velocidade=1,):
+    def __init__(self, largura_tela, altura_tela, caminho_sprite, velocidade=1):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
         self.raio = 80
         self.pos_y = 0
+        self.vida = 30
 
         super().__init__(
             x=0,
@@ -31,8 +32,10 @@ class Asteroid(ElementoJogo):
         pos_x = random.randrange(40, self.largura_tela - 40)
         vel = random.randrange(20, 100) / 100
 
+
         self.pos_y = -50
         self.rect.y = int(self.pos_y)
+        self.vida = 30
 
         self.rect.x = pos_x
         self.velocidade = vel
@@ -47,6 +50,11 @@ class Asteroid(ElementoJogo):
         # Reinicia no topo caso passe reto pelo fundo da tela
         if self.rect.top > self.altura_tela:
             self.iniciar_status()
+
+
+    def tomar_dano(self, dano):
+        self.vida -= dano
+        return self.vida <= 0
 
     def desenhar(self, tela):
         # Polimorfismo: desenha o sprite do asteroide

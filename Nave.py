@@ -33,6 +33,7 @@ class Nave(ElementoJogo):
         self.altura_tela = altura_tela
         self.vel_x = 0
         self.tiros = []  # Lista que guardará os tiros ativos
+        self.ultimo_disparo = pygame.time.get_ticks()
 
         self.sprite_sheet = pygame.image.load(caminho_sprite)
         self.player_ship = self.__get_ship_sprite(GameConfig.PlayerConfig.PLAYER_SHIP)
@@ -42,6 +43,8 @@ class Nave(ElementoJogo):
         self.rect.bottom = altura_tela
 
 
+    def resetar_vida(self):
+        self.vida_atual = self.vida_maxima
 
     def processar_evento(self, evento):
         """Controla os eventos de teclado para movimentação e disparo."""
@@ -68,18 +71,25 @@ class Nave(ElementoJogo):
 
     def atirar(self):
         if PlayerConfig.PLAYER_SHIP == 2:
-            largura_tiro = 4
-            altura_tiro = 50
+            largura_tiro = 8
+            altura_tiro = 100
         else:
-            largura_tiro = 4
-            altura_tiro = 12
+            largura_tiro = 6
+            altura_tiro = 25
 
-        # Posiciona o tiro no centro horizontal da nave (rect.centerx) e na ponta superior (rect.top)
-        tiro_x = self.rect.centerx - (largura_tiro // 2)
-        tiro_y = self.rect.top - altura_tiro
+        agora = pygame.time.get_ticks()
+        intervalo_ms_tiro = max(50, int(self.cooldown_tiro * 1000))
 
-        novo_tiro = pygame.Rect(tiro_x, tiro_y, largura_tiro, altura_tiro)
-        self.tiros.append(novo_tiro)
+        if agora - self.ultimo_disparo >= intervalo_ms_tiro:
+            self.ultimo_disparo = agora
+
+            # Posiciona o tiro no centro horizontal da nave (rect.centerx) e na ponta superior (rect.top)
+            tiro_x = self.rect.centerx - (largura_tiro // 2)
+            tiro_y = self.rect.top - altura_tiro
+
+            novo_tiro = pygame.Rect(tiro_x, tiro_y, largura_tiro, altura_tiro)
+            self.tiros.append(novo_tiro)
+
 
     def atualizar_tiros(self):
         # Itera sobre uma cópia da lista self.tiros[:] para poder remover sem dar erro no loop
@@ -96,6 +106,7 @@ class Nave(ElementoJogo):
 
         self.mover()
         self.atualizar_tiros()
+        self.player_ship = self.__get_ship_sprite(GameConfig.PlayerConfig.PLAYER_SHIP)
 
     def desenhar(self, tela):
         # Polimorfismo: renderiza a nave e acordo com oq o player pegou

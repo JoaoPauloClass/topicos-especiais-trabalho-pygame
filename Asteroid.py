@@ -8,6 +8,7 @@ class Asteroid(ElementoJogo):
         self.largura_tela = largura_tela
         self.altura_tela = altura_tela
         self.raio = 80
+        self.pos_y = 0
 
         super().__init__(
             x=0,
@@ -27,10 +28,21 @@ class Asteroid(ElementoJogo):
         # - Posicionar o Y acima da tela (ex: entre -150 e -50)
         # - Sortear uma velocidade de queda aleatória (ex: entre 3 e 7)
         # =========================================================================
+        pos_x = random.randrange(40, self.largura_tela - 40)
+        vel = random.randrange(20, 100) / 100
+
+        self.pos_y = -50
+        self.rect.y = int(self.pos_y)
+
+        self.rect.x = pos_x
+        self.velocidade = vel
+
         pass
 
     def mover(self):
-        self.rect.y += self.velocidade
+        self.pos_y += self.velocidade
+
+        self.rect.y = int(self.pos_y)
 
         # Reinicia no topo caso passe reto pelo fundo da tela
         if self.rect.top > self.altura_tela:

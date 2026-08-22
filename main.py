@@ -243,7 +243,7 @@ class Jogo:
         self.customizacao = Customizar(self.tela)
 
         self.clock = pygame.time.Clock()
-        self.fps = EngineConfig.FPS
+        self.fps = GameConfig.EngineConfig.FPS
         self.pontos = 0
 
         # Elementos do jogo
@@ -288,6 +288,7 @@ class Jogo:
 
     def executar(self):
         while True:
+            self.clock.tick(self.fps)
             if self.estado == "MENU":
                 # Processa eventos do menu e atualiza o estado se o botão for clicado
                 self.estado = self.menu.processar_eventos()

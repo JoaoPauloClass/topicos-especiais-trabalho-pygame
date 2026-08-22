@@ -5,13 +5,28 @@ from config.GameConfig import PlayerConfig
 
 class Nave(ElementoJogo):
     def __init__(self, largura_tela, altura_tela,caminho_sprite, velocidade=6, ):
+
+        self.id_nave = GameConfig.PlayerConfig.PLAYER_SHIP
+
+        dados_nave = GameConfig.ShipConfig.DADOS_NAVES.get(
+            self.id_nave, GameConfig.ShipConfig.DADOS_NAVES[0]
+        )
+
+        self.nome = dados_nave["nome"]
+        self.vida_maxima = dados_nave["vida"]
+        self.vida_atual = dados_nave["vida"]
+        self.dano_tiro = dados_nave["dano_tiro"]
+        self.vel_tiro = dados_nave["vel_tiro"]
+        self.cooldown_tiro = dados_nave[
+            "cooldown"
+        ]
         # Inicializa a classe base com posição inicial centralizada embaixo
         super().__init__(
             x=largura_tela // 2 - 20,
             y=altura_tela - 60,
             largura=40,
             altura=40,
-            velocidade=PlayerConfig.PLAYER_VELOCITY,
+            velocidade=dados_nave["velocidade"],
             caminho_sprite='./sprites/fighters.png'
         )
         self.largura_tela = largura_tela
@@ -26,6 +41,8 @@ class Nave(ElementoJogo):
         self.rect.centerx = largura_tela // 2
         self.rect.bottom = altura_tela
 
+
+
     def processar_evento(self, evento):
         """Controla os eventos de teclado para movimentação e disparo."""
         if evento.type == pygame.KEYDOWN:
@@ -33,8 +50,6 @@ class Nave(ElementoJogo):
                 self.vel_x = -self.velocidade
             elif evento.key in (pygame.K_RIGHT, pygame.K_d):
                 self.vel_x = self.velocidade
-            elif evento.key == pygame.K_SPACE:
-                self.atirar()
 
         elif evento.type == pygame.KEYUP:
             if evento.key in (pygame.K_LEFT, pygame.K_a) and self.vel_x < 0:
@@ -52,21 +67,33 @@ class Nave(ElementoJogo):
             self.rect.right = (self.largura_tela - 120)
 
     def atirar(self):
-        # =========================================================================
-        # TODO 1 (Alunos): Criar um projétil (pygame.Rect) saindo da ponta da nave
-        # (ex: largura 4, altura 10) e adicioná-lo à lista self.tiros
-        # =========================================================================
-        pass
+        if PlayerConfig.PLAYER_SHIP == 2:
+            largura_tiro = 4
+            altura_tiro = 50
+        else:
+            largura_tiro = 4
+            altura_tiro = 12
+
+        # Posiciona o tiro no centro horizontal da nave (rect.centerx) e na ponta superior (rect.top)
+        tiro_x = self.rect.centerx - (largura_tiro // 2)
+        tiro_y = self.rect.top - altura_tiro
+
+        novo_tiro = pygame.Rect(tiro_x, tiro_y, largura_tiro, altura_tiro)
+        self.tiros.append(novo_tiro)
 
     def atualizar_tiros(self):
-        # =========================================================================
-        # TODO 2 (Alunos):
-        # - Mover cada tiro da lista para cima (diminuir tiro.y)
-        # - Remover da lista os tiros que saírem pelo topo da tela (tiro.bottom < 0)
-        # =========================================================================
-        pass
+        # Itera sobre uma cópia da lista self.tiros[:] para poder remover sem dar erro no loop
+        for tiro in self.tiros[:]:
+            tiro.y -= self.vel_tiro
+
+            if tiro.bottom < 0:
+                self.tiros.remove(tiro)
 
     def atualizar(self):
+        teclas = pygame.key.get_pressed()
+        if teclas[pygame.K_SPACE]:
+            self.atirar()
+
         self.mover()
         self.atualizar_tiros()
 
@@ -76,7 +103,10 @@ class Nave(ElementoJogo):
 
         # Desenha os tiros ativos na cor branca
         for tiro in self.tiros:
-            pygame.draw.rect(tela, (255, 255, 255), tiro)
+            if GameConfig.PlayerConfig.PLAYER_SHIP == 2:
+                pygame.draw.rect(tela, (200, 0, 0), tiro)
+            else:
+                pygame.draw.rect(tela, (255, 255, 255), tiro)
 
     def __get_ship_sprite(self, player_ship=1):
         #méto-do privado da classe para separa o sprite sheet e passar um sprite unico para o metodo de desenho
